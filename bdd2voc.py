@@ -13,12 +13,12 @@ from tqdm import tqdm
 
 DEBUG = False
 
-BDD_FOLDER = osp.join("..", "bdd100k", "bdd100k")
+bdd_folder = osp.join("..", "bdd100k", "bdd100k")
 
 if DEBUG:
     XML_PATH = osp.join(".", "xml")
 else:
-    XML_PATH = osp.join(BDD_FOLDER, "xml")
+    XML_PATH = osp.join(bdd_folder, "xml")
 
 
 def bdd_to_voc(bdd_folder, xml_folder):
@@ -117,69 +117,4 @@ def prettify(elem):
 
 
 if __name__ == "__main__":
-    """
-    Convert BDD100k json file to PASCAL VOC stype xml files.
-    :param bdd_folder: a path to bdd100k which contains images, labels folder.
-    :param xml_folder: a path to save the xml files.
-    :return:
-    """
-    image_path = osp.join(bdd_folder, "images", "100k", "%s")
-    label_path = osp.join(bdd_folder, "labels", "bdd100k_labels_images_%s.json")
-
-    classes = set()
-
-    # for trainval in ['val']:
-    for trainval in ['train', 'val']:
-        image_folder = image_path % trainval
-        json_path = label_path % trainval
-        xml_folder_ = osp.join(xml_folder, trainval)
-
-        if not os.path.exists(xml_folder_):
-            os.makedirs(xml_folder_)
-
-        with open(json_path) as f:
-            j = f.read()
-        data = json.loads(j)
-
-        for datum in tqdm(data):
-            annotation = Element('annotation')
-            SubElement(annotation, 'folder').text = trainval
-            SubElement(annotation, 'filename').text = datum['name']
-            size = get_size(osp.join(image_folder, datum['name']))
-            annotation.append(size)
-
-            # additional information
-            for key, item in datum['attributes'].items():
-                SubElement(annotation, key).text = item
-
-            # bounding box
-            for label in datum['labels']:
-                try:
-                    box2d = label['box2d']
-                except KeyError:
-                    continue
-                else:
-                    bndbox = get_bbox(box2d)
-
-                object_ = Element('object')
-                SubElement(object_, 'name').text = label['category']
-                classes.add(label['category'])
-
-                # additional information
-                for key, item in label['attributes'].items():
-                    if type(item) == str:
-                        SubElement(object_, key).text = item
-                    elif type(item) == bool:
-                        SubElement(object_, key).text = '1' if item else '0'
-                    elif type(item) in [int, float]:
-                        SubElement(object_, key).text = str(item)
-                    else:
-                        raise ValueError("%s could not be handled" % type(item))
-
-                object_.append(bndbox)
-                annotation.append(object_)
-
-            xml_filename = osp.splitext(datum['name'])[0] + '.xml'
-            with open(osp.join(xml_folder_, xml_filename), 'w') as f:
-                f.write(prettify(annotation))
-    print(classes)
+    bdd_to_voc(bdd_folder, XML_PATH)
