@@ -21,10 +21,23 @@ Object Detection with MobileNet-SSD, MobileNetV2-SSD/SSDLite on VOC, BDD100K Dat
 The dataset path should be structured as follow:
 ```bashrc
 $ pip install --user kaggle
-$ kaggle datasets download solesensei/solesensei_bdd100k
+$ kaggle datasets download ansarisaquib/bdd100
 
-# Unzip downloaded zip file
-# follow instructions to conduct the directory structure as below.
+$ mkdir bdd100k
+$ mv bdd100.zip bdd100k
+$ unzip bdd100k/bdd100.zip
+$ cd bdd100k
+
+# Below is the structure of the dataset
+
+|- bdd100k
+|- bdd100k_drivable_labels_trainval
+|- bdd100k_ins_seg_labels_trainval
+|- bdd100k_labels_release
+|- bdd100k_pan_seg_labels_trainval
+|- bdd100k_sem_seg_labels_trainval
+
+
 |- bdd100k -- bdd100k -- images -- 100k -- train -- (70000 images)
 |               |                        |- val -- (10000 images)
 |               |
@@ -43,21 +56,8 @@ $ kaggle datasets download solesensei/solesensei_bdd100k
                   |- train_ssd_BDD.py
                   |- ssd_test_img.py
                   |- ...
-@TranLeAnh
 
-$ mkdir bdd100k
-$ mv solesensei_bdd100k.zip bdd100k
-$ cd bdd100k
-$ unzip solesensei_bdd100k.zip
 
-# under 100k/train, some images are splitted into testA, testB, trainA, trainB.
-# extract them out.
-$ mv bdd100k/bdd100k/image bdd100k/
-
-$ mv bdd100k/images/100k/train/testA/* bdd100k/images/100k/train/
-$ mv bdd100k/images/100k/train/testB/* bdd100k/images/100k/train/
-$ mv bdd100k/images/100k/train/trainA/* bdd100k/images/100k/train/
-$ mv bdd100k/images/100k/train/trainB/* bdd100k/images/100k/train/
 
 # bdd100k/bdd100k/labels is bdd100k/bdd100-_labels_release/bdd100k/labels
 # Change location of it to satisfy above directory structure.
@@ -133,6 +133,7 @@ truck 0.580303 167 265 485 483
 - https://github.com/qfgaohao/pytorch-ssd
 - https://github.com/leeesangwon/bdd100k_to_VOC
 
-April 2020
 
-Tran Le Anh
+
+Credit: Tran Le Anh April 2020
+Updated in March 2023 by @btdat2506
