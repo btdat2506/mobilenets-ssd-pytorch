@@ -2,23 +2,8 @@
 
 Object Detection with MobileNet-SSD, MobileNetV2-SSD/SSDLite on VOC, BDD100K Datasets.
 
-## Results
-1. Detection
 
-<img src="readme_images/detection_105e.jpg" width="1200">
-
-2. View the result on [Youtube](https://www.youtube.com/watch?v=0u3f4t-Wkv4)
-
-## Dependencies
-- Python 3.6+
-- OpenCV
-- PyTorch
-- Pyenv (optional)
-- tensorboard
-- tqdm
-
-## Dataset Path (optional)
-The dataset path should be structured as follow:
+## Instructions
 ```bashrc
 $ pip install --user kaggle
 $ kaggle datasets download ansarisaquib/bdd100
@@ -27,6 +12,10 @@ $ mkdir bdd100k
 $ mv bdd100.zip bdd100k
 $ unzip bdd100k/bdd100.zip
 $ cd bdd100k
+
+# Change location of labels which is from "bdd100k/bdd100_labels_release/bdd100k/labels" to "bdd100k/bdd100k/labels".
+$ cp -r bdd100k_labels_release/bdd100k/labels/ ./bdd100k/bdd100k/
+
 
 # Below is the structure of the dataset
 
@@ -37,41 +26,48 @@ $ cd bdd100k
 |- bdd100k_pan_seg_labels_trainval
 |- bdd100k_sem_seg_labels_trainval
 
-
-|- bdd100k -- bdd100k -- images -- 100k -- train -- (70000 images)
-|               |                        |- val -- (10000 images)
-|               |
-|               |- labels -- (.json)
-|               |
-|               |- xml -- train -- (.xml)
-|               |- val -- (.xml)
-|
-|- pytorch-ssd - data -- VOCdevkit -- test -- VOC2007 -- (Annotations, ImageSets, JPEGImages,...)
-     (our repo)   |                    |- VOC2007 -- (Annotations, ImageSets, JPEGImages,...)
-                  |
-                  |- bdd_files
-                  |- images
-                  |- models
-                  |- ...
-                  |- train_ssd_BDD.py
-                  |- ssd_test_img.py
-                  |- ...
-
-
-
-# bdd100k/bdd100k/labels is bdd100k/bdd100-_labels_release/bdd100k/labels
-# Change location of it to satisfy above directory structure.
-$ cp -r bdd100k_labels_release/bdd100k/labels/ ./bdd100k/
+- content - 
+  |- bdd100k -- bdd100k -- images -- 100k -- train -- (70000 images)
+  |               |                |      |- val -- (10000 images)
+  |               |                | 
+  |               |                |- 10k -- train
+  |               | 
+  |               |
+  |               |- labels -- (.json)
+  |               |
+  |               |- xml -- train -- (.xml)
+  |               |- val -- (.xml)
+  |
+  |- pytorch-ssd - data -- VOCdevkit -- test -- VOC2007 -- (Annotations, ImageSets, JPEGImages,...)
+       (our repo)   |                    |- VOC2007 -- (Annotations, ImageSets, JPEGImages,...)
+                    |
+                    |- bdd_files
+                    |- images
+                    |- models
+                    |- ...
+                    |- train_ssd_BDD.py
+                    |- ssd_test_img.py
+                    |- ...
 ```
+
 ## Pre-processing
 1. Convert BDD100K anotation format (.json) to VOC anotation format (.xml)
 ```bashrc
+# Note:
+# - This will take a while to run.
+# - Have not check on its effect yet, will investigate further in the future.
 $ python bdd2voc.py
 ```
+
+![](./First-Preprocessing.png)
+This is what it should look like after the first pre-processing.
+
 2. Remove training samples having no anotation (70000 to 69863)
 ```bashrc
 $ python remove_nolabel_data.py
 ```
+
+
 ## Download Pre-trained Models (VOC)
 1. MobileNet-SSD
 ```bashrc
@@ -82,7 +78,7 @@ $ wget -P models https://storage.googleapis.com/models-hao/mobilenet-v1-ssd-mp-0
 $ wget -P models https://storage.googleapis.com/models-hao/mb2-ssd-lite-mp-0_686.pth
 ```
 ## Train
-1. Train MobileNet-SSD (VOC)
+1. Train MobileNet-SSD (VOC) (don't use cause not figure out where VOC2007 D is located).
 ```bashrc
 $ python train_ssd_VOC.py --datasets ~/data/VOCdevkit/VOC2007/ --validation_dataset ~/data/VOCdevkit/test/VOC2007/ --net mb1-ssd --batch_size 24 --num_epochs 100 --scheduler cosine --lr 0.01 --t_max 200
 ```
@@ -132,8 +128,6 @@ truck 0.580303 167 265 485 483
 ## References
 - https://github.com/qfgaohao/pytorch-ssd
 - https://github.com/leeesangwon/bdd100k_to_VOC
+Credit from Tran Le Anh in April 2020.
 
-
-
-Credit: Tran Le Anh April 2020
 Updated in March 2023 by @btdat2506
